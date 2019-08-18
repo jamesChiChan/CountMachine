@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,12 @@ public class MainActivity extends AppCompatActivity {
     private double num2=0;
     //+-*/符號,用於判斷做何運算
     private String sign = "";
+    //+-*/.只能按一次,由 True or False 判斷
+    private boolean TFplus = true;
+    private boolean TFsubtract = true;
+    private boolean TFmultiply = true;
+    private boolean TFdivide = true;
+    private boolean TFdot = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         Button equal = (Button) findViewById(R.id.button_epual);
         //算式
         final TextView textView = (TextView) findViewById(R.id.input_num);
-        textView.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG); //添加下劃線
+        textView.setMovementMethod(ScrollingMovementMethod.getInstance());
 
         btn0.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,7 +136,10 @@ public class MainActivity extends AppCompatActivity {
         dot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textView.append(".");
+                if (TFdot == true) {
+                    TFdot = false;
+                    textView.append(".");
+                }
             }
         });
         //清除
@@ -138,6 +148,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 num1 = 0;
                 num2 = 0;
+                TFplus = true;
+                TFsubtract = true;
+                TFmultiply = true;
+                TFdivide = true;
+                TFdot = true;
                 textView.setText("0");
             }
         });
@@ -145,36 +160,52 @@ public class MainActivity extends AppCompatActivity {
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                num1 = Double.parseDouble(textView.getText().toString());
-                sign = "+";
-                textView.setText("0");
+                if (TFplus == true) {
+                    num1 = Double.parseDouble(textView.getText().toString());
+                    sign = "+";
+                    TFplus = false;
+                    TFdot = true;
+                    textView.setText("0");
+                }
             }
         });
         // - 減
         subtract.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                num1 = Double.parseDouble(textView.getText().toString());
-                sign = "-";
-                textView.setText("0");
+                if (TFsubtract == true) {
+                    num1 = Double.parseDouble(textView.getText().toString());
+                    sign = "-";
+                    TFsubtract = false;
+                    TFdot = true;
+                    textView.setText("0");
+                }
             }
         });
         // * 乘
         multiply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                num1 = Double.parseDouble(textView.getText().toString());
-                sign = "*";
-                textView.setText("0");
+                if (TFmultiply == true) {
+                    num1 = Double.parseDouble(textView.getText().toString());
+                    sign = "*";
+                    TFmultiply = false;
+                    TFdot = true;
+                    textView.setText("0");
+                }
             }
         });
         // / 除
         divide.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                num1 = Double.parseDouble(textView.getText().toString());
-                sign = "/";
-                textView.setText("0");
+                if (TFdivide == true) {
+                    num1 = Double.parseDouble(textView.getText().toString());
+                    sign = "/";
+                    TFdivide = false;
+                    TFdot = true;
+                    textView.setText("0");
+                }
             }
         });
         // = 等於
@@ -186,15 +217,23 @@ public class MainActivity extends AppCompatActivity {
                 switch (sign) {
                     case "+":
                         textView.setText(String.valueOf(num1 + num2));
+                        TFplus = true;
+                        TFdot = true;
                         break;
                     case "-":
                         textView.setText((String.valueOf(num1 - num2)));
+                        TFsubtract = true;
+                        TFdot = true;
                         break;
                     case "*":
                         textView.setText(String.valueOf(num1 * num2));
+                        TFmultiply = true;
+                        TFdot = true;
                         break;
                     case "/":
                         textView.setText(String.valueOf(num1 / num2));
+                        TFdivide = true;
+                        TFdot = true;
                         break;
                     default:
                         break;
